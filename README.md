@@ -5,3 +5,7 @@
   * Create github repo
   * Add .gitignore
   * Fix codestyle
+
+- [24.06.2021](hw_24-06-21)
+  * Learn Tasks
+  
