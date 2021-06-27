@@ -65,8 +65,8 @@ class SingleTopActivity : AppCompatActivity(), View.OnClickListener {
         findViewById<TextView>(R.id.description).text = savedInstanceState.getString("desc")
         standard_id = savedInstanceState.getInt("standard_id", 0)
         single_instance_id = savedInstanceState.getInt("single_instance_id", 0)
-        standard_id = savedInstanceState.getInt("single_task_id", 0)
-        standard_id = savedInstanceState.getInt("single_top_id", 0)
+        single_task_id = savedInstanceState.getInt("single_task_id", 0)
+        single_top_id = savedInstanceState.getInt("single_top_id", 0)
     }
 
     override fun onClick(v: View?) {
