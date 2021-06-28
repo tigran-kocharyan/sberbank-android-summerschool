@@ -12,4 +12,6 @@
   * `FLAG_ACTIVITY_NEW_TASK`
   
 - [26.06.2021 Translitirator](hw_26-06-21)
-  * soon to be added...
+  * `ConstraintLayout`
+  * `TextInputLayout`
+  * Transliteration Russian-English
