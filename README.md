@@ -17,9 +17,4 @@
   * Transliteration Russian-English
 
 - [29.06.2021 Tic-Tac-Toe](hw_29-06-21)
-  * ` Bitmap`
-  * `Clip Drawable`
-  * `Vector Drawable`
-  * `Shape Drawable`
-  * `State List`
-  * `Layer List`
+  * Drawables
