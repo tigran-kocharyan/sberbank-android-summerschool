@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="SpeedoDefaultStyle">
+        <item name="lowSpeedColor">#00FF00</item>
+        <item name="mediumSpeedColor">#FFFF00</item>
+        <item name="highSpeedColor">#FF0000</item>
+        <item name="arrowColor">@color/black</item>
+        <item name="currentSpeed">0</item>
+        <item name="maxSpeed">180</item>
+    </style>
+</resources>
