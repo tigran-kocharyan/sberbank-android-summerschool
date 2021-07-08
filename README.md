@@ -14,6 +14,8 @@
   * Drawable
 
 - [01.07.2021 RecyclerView](hw_01-07-21)
-  * RecyclerView
 
 - [03.07.2021 UI Pracrice](hw_03-07-21)
+
+- [06.07.2021 CustomViewe](hw_03-07-21)
+
