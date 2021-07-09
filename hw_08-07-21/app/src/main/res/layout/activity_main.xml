@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ru.totowka.drawer.DrawView
+        android:id="@+id/drawer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/instruments"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <GridLayout
+        android:id="@+id/instruments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:columnCount="3"
+        android:orientation="horizontal"
+        android:rowCount="2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/rectangle"
+            android:layout_columnWeight="1"
+            android:layout_marginHorizontal="5dp"
+            android:background="@drawable/bg_buttons"
+            android:text="Rectangle"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/vector"
+            android:layout_columnWeight="1"
+            android:background="@drawable/bg_buttons"
+            android:text="Vector"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/path"
+            android:layout_columnWeight="1"
+            android:layout_marginHorizontal="5dp"
+            android:background="@drawable/bg_buttons"
+            android:text="Path"
+            app:backgroundTint="@null" />
+
+        <Button
+            android:id="@+id/color_picker"
+            android:layout_columnSpan="3"
+            android:layout_gravity="fill"
+            android:layout_marginHorizontal="15dp"
+            android:text="Pick Color" />
+
+        <Button
+            android:id="@+id/reset"
+            android:layout_columnSpan="3"
+            android:layout_gravity="fill"
+            android:layout_marginHorizontal="15dp"
+            android:text="Reset" />
+    </GridLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

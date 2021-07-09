@@ -19,3 +19,5 @@
 
 - [06.07.2021 CustomView](hw_06-07-21)
 
+- [08.07.2021 Drawer](hw_08-07-21)
+  * TouchEvents
