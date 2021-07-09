@@ -8,6 +8,7 @@ import android.view.MotionEvent.ACTION_DOWN
 import android.view.MotionEvent.ACTION_MOVE
 import android.view.View
 import ru.totowka.drawer.model.Box
+import ru.totowka.drawer.model.Curve
 import ru.totowka.drawer.model.DrawType
 import ru.totowka.drawer.model.Vector
 
@@ -15,102 +16,107 @@ import ru.totowka.drawer.model.Vector
 class DrawView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     companion object {
         const val STROKE_WIDTH = 10f
+        const val COLOR = Color.RED
     }
-
     private var drawType = DrawType.PATH
+    private var mColor: Int = COLOR
 
     private var mCurrentBox: Box? = null
     private val mBoxes: ArrayList<Box> = ArrayList()
-    private val mBoxPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        strokeWidth = STROKE_WIDTH
-        color = Color.RED
-        style = Paint.Style.STROKE
-    }
-
     private val mPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         strokeWidth = STROKE_WIDTH
-        color = Color.RED
+        color = COLOR
         style = Paint.Style.STROKE
     }
-    private val mPath = Path()
-
     private var mCurrentVector: Vector? = null
     private val mVectors: ArrayList<Vector> = ArrayList()
 
+    private var mCurrentCurve: Curve? = null
+    private val mCurves: ArrayList<Curve> = ArrayList()
+
     override fun onDraw(canvas: Canvas) {
-        canvas.drawPath(mPath, mPaint)
-
+        for (curve in mCurves) {
+            curve.draw(canvas, mPaint)
+        }
         for (box in mBoxes) {
-            val left: Float = box.origin.x.coerceAtMost(box.current.x)
-            val right: Float = box.origin.x.coerceAtLeast(box.current.x)
-            val top: Float = box.origin.y.coerceAtMost(box.current.y)
-            val bottom: Float = box.origin.y.coerceAtLeast(box.current.y)
-            canvas.drawRect(left, top, right, bottom, mBoxPaint)
+            box.draw(canvas, mPaint)
         }
-
         for (vector in mVectors) {
-            canvas.drawLine(vector.start.x, vector.start.y, vector.end.x, vector.end.y, mPaint)
+            vector.draw(canvas, mPaint)
         }
+        mPaint.color = mColor
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        val eventX = event.x
-        val eventY = event.y
         when(drawType) {
             DrawType.PATH -> {
-                when (event.action) {
-                    ACTION_DOWN -> {
-                        mPath.moveTo(eventX, eventY)
-                        return true
-                    }
-                    ACTION_MOVE -> mPath.lineTo(eventX, eventY)
-                    else -> return false
-                }
-                invalidate()
+                processCurve(event)
             }
             DrawType.RECTANGLE -> {
-                val current = PointF(event.x, event.y)
-                when (event.action) {
-                    ACTION_DOWN -> {
-                        mCurrentBox = Box(current, current)
-                        mBoxes.add(mCurrentBox!!)
-                    }
-                    ACTION_MOVE -> if (mCurrentBox != null) {
-                        mCurrentBox!!.current = current
-                        invalidate()
-                    }
-                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> mCurrentBox = null
-                }
+                processRectangle(event)
             }
             DrawType.VECTOR -> {
-                val current = PointF(event.x, event.y)
-                when (event.action) {
-                    ACTION_DOWN -> {
-                        mCurrentVector = Vector(current, current)
-                        mVectors.add(mCurrentVector!!)
-                    }
-                    ACTION_MOVE -> if (mCurrentVector != null) {
-                        mCurrentVector!!.end = current
-                        invalidate()
-                    }
-                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> mCurrentBox = null
-                }
+                processVector(event)
             }
         }
-        return true;
+        return true
+    }
+
+    private fun processVector(event: MotionEvent) {
+        val current = PointF(event.x, event.y)
+        when (event.action) {
+            ACTION_DOWN -> {
+                mCurrentVector = Vector(current, current, mPaint.color)
+                mVectors.add(mCurrentVector!!)
+            }
+            ACTION_MOVE -> if (mCurrentVector != null) {
+                mCurrentVector!!.end = current
+                invalidate()
+            }
+            else -> mCurrentVector = null
+        }
+    }
+
+    private fun processRectangle(event: MotionEvent) {
+        val current = PointF(event.x, event.y)
+        when (event.action) {
+            ACTION_DOWN -> {
+                mCurrentBox = Box(current, current,  mPaint.color)
+                mBoxes.add(mCurrentBox!!)
+            }
+            ACTION_MOVE -> if (mCurrentBox != null) {
+                mCurrentBox!!.current = current
+                invalidate()
+            }
+            else -> mCurrentBox = null
+        }
+    }
+
+    private fun processCurve(event: MotionEvent) {
+        when (event.action) {
+            ACTION_DOWN -> {
+                mCurrentCurve = Curve(Path(), mPaint.color)
+                mCurves.add(mCurrentCurve!!)
+                mCurrentCurve!!.curve.moveTo(event.x, event.y)
+            }
+            ACTION_MOVE -> if (mCurrentCurve != null) {
+                mCurrentCurve!!.curve.lineTo(event.x, event.y)
+                invalidate()
+            }
+            else -> mCurrentCurve = null
+        }
     }
 
     fun reset() {
-        mBoxes.clear();
-        mPath.reset()
+        mBoxes.clear()
+        mCurves.clear()
         mVectors.clear()
         invalidate()
     }
 
     fun setColor(color: Int) {
+        mColor = color
         mPaint.color = color
-        mBoxPaint.color = color
-        mBoxPaint.color = color
     }
 
     fun setDrawType(type: DrawType) {

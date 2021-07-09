@@ -21,12 +21,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        initialize()
+        setClickListeners()
+        colorPicker.setOnColorPickedListener { color, _ -> drawer.setColor(color) }
+    }
+
+    private fun initialize() {
         buttonRectangle = findViewById(R.id.rectangle)
         buttonVector = findViewById(R.id.vector)
         buttonPath = findViewById(R.id.path)
         buttonReset = findViewById(R.id.reset)
         buttonPickColor = findViewById(R.id.color_picker)
         drawer = findViewById(R.id.drawer)
+    }
+
+    private fun setClickListeners() {
         buttonPath.isEnabled = false
         buttonRectangle.setOnClickListener(this)
         buttonVector.setOnClickListener(this)
@@ -35,7 +44,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         buttonReset.setOnClickListener(this)
         buttonPickColor.setOnClickListener(this)
         colorPicker = ColorPickerDialog.createColorPickerDialog(this)
-        colorPicker.setOnColorPickedListener { color, _ -> drawer.setColor(color) }
     }
 
     override fun onClick(v: View?) {
