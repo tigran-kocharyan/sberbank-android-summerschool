@@ -4,10 +4,11 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.util.SparseArray
+import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.MotionEvent.*
+import android.view.ScaleGestureDetector
 import android.view.View
-import androidx.core.util.isEmpty
 import androidx.core.util.isNotEmpty
 import ru.totowka.drawer.model.Box
 import ru.totowka.drawer.model.Curve
@@ -20,20 +21,19 @@ class DrawView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         const val STROKE_WIDTH = 10f
         const val COLOR = Color.RED
     }
-
-    private var drawType = DrawType.PATH
-    private var mColor: Int = COLOR
-
-    private var mCurrentBox: Box? = null
-    private val mBoxes: ArrayList<Box> = ArrayList()
     private val mPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         strokeWidth = STROKE_WIDTH
         color = COLOR
         style = Paint.Style.STROKE
     }
+    private var mDrawType = DrawType.PATH
+    private var mColor: Int = COLOR
+    private var mScaleGestureDetector: ScaleGestureDetector? = null
+
+    private var mCurrentBox: Box? = null
+    private val mBoxes: ArrayList<Box> = ArrayList()
     private var mCurrentVector: Vector? = null
     private val mVectors: ArrayList<Vector> = ArrayList()
-
     private val mCurves: ArrayList<Curve> = ArrayList()
     private val mMultiTouchCurves: SparseArray<Curve> = SparseArray()
 
@@ -56,7 +56,8 @@ class DrawView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        return when (drawType) {
+        mScaleGestureDetector?.onTouchEvent(event)
+        return when (mDrawType) {
             DrawType.PATH -> {
                 processCurve(event)
             }
@@ -152,6 +153,10 @@ class DrawView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     }
 
     fun setDrawType(type: DrawType) {
-        drawType = type
+        mDrawType = type
+    }
+
+    fun setScaleGestureDetector(detector: ScaleGestureDetector) {
+        mScaleGestureDetector = detector
     }
 }

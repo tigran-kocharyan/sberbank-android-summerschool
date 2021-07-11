@@ -1,9 +1,9 @@
 package ru.totowka.drawer
 
 import android.os.Bundle
-import android.util.Log
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
+import android.view.ScaleGestureDetector.SimpleOnScaleGestureListener
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
@@ -23,10 +23,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var scaleFactor = 1.0f
 
 
-    companion object {
-        private const val TAG = "MainActivity"
-    }
-    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -34,6 +30,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         setClickListeners()
         colorPicker.setOnColorPickedListener { color, _ -> drawer.setColor(color) }
         scaleGestureDetector = ScaleGestureDetector(this, ScaleListener())
+        drawer.setScaleGestureDetector(scaleGestureDetector)
     }
 
     private fun initialize() {
@@ -92,7 +89,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
         override fun onScale(detector: ScaleGestureDetector): Boolean {
-            Log.d(TAG, "onScale() called with: detector = $detector")
             scaleFactor *= detector.scaleFactor
             scaleFactor = 0.1f.coerceAtLeast(scaleFactor.coerceAtMost(10.0f))
             drawer.scaleX = scaleFactor
