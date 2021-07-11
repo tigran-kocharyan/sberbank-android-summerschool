@@ -1,12 +1,15 @@
 package ru.totowka.drawer
 
-import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
+import android.view.MotionEvent
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.azeesoft.lib.colorpicker.ColorPickerDialog
 import ru.totowka.drawer.model.DrawType
+
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var buttonRectangle: Button
@@ -16,14 +19,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var buttonPickColor: Button
     private lateinit var drawer: DrawView
     private lateinit var colorPicker: ColorPickerDialog
+    private lateinit var scaleGestureDetector: ScaleGestureDetector
+    private var scaleFactor = 1.0f
 
 
+    companion object {
+        private const val TAG = "MainActivity"
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initialize()
         setClickListeners()
         colorPicker.setOnColorPickedListener { color, _ -> drawer.setColor(color) }
+        scaleGestureDetector = ScaleGestureDetector(this, ScaleListener())
     }
 
     private fun initialize() {
@@ -78,5 +88,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         buttonRectangle.isEnabled = true
         buttonVector.isEnabled = true
         buttonPath.isEnabled = true
+    }
+
+    private inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        override fun onScale(detector: ScaleGestureDetector): Boolean {
+            Log.d(TAG, "onScale() called with: detector = $detector")
+            scaleFactor *= detector.scaleFactor
+            scaleFactor = 0.1f.coerceAtLeast(scaleFactor.coerceAtMost(10.0f))
+            drawer.scaleX = scaleFactor
+            drawer.scaleY = scaleFactor
+            return true
+        }
     }
 }
