@@ -17,9 +17,11 @@
 
 - [03.07.2021 UI Pracrice](hw_03-07-21)
 
-- [06.07.2021 CustomView](hw_06-07-21)
+- [06.07.2021 Speedy](hw_06-07-21)
 
 - [08.07.2021 Drawer](hw_08-07-21)
   * TouchEvents
 
 - [10.07.2021 MultiTouch Drawer](hw_08-07-21)
+
+- [13.07.2021 Measure Responsive Speedy]]((hw_06)

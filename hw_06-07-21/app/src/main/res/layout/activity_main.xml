@@ -8,10 +8,12 @@
 
     <ru.totowka.customview.view.SpeedoView
         android:id="@+id/speedo"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:padding="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:currentSpeed="0"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:maxSpeed="180"/>
 
     <SeekBar
