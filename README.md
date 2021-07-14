@@ -24,4 +24,4 @@
 
 - [10.07.2021 MultiTouch Drawer](hw_08-07-21)
 
-- [13.07.2021 Measure Responsive Speedy](hw_06)
+- [13.07.2021 Measure Responsive Speedy](hw_06-07-21)
