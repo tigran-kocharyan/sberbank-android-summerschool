@@ -52,7 +52,11 @@ class SpeedoView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private val arrowPaint = Paint().apply {
         strokeWidth = ARROW_WIDTH
     }
-    private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private val maxSpeedTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.BLACK
+        textSize = TEXT_SIZE
+    }
+    private val currentSpeedTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.BLACK
         textSize = TEXT_SIZE
     }
@@ -136,7 +140,6 @@ class SpeedoView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         super.onDraw(canvas)
         calcBounds()
         arrowPaint.color = arrowColor
-        foregroundArcPaint.shader = linearGradient
 
         canvas?.apply {
             drawArc(
@@ -177,13 +180,13 @@ class SpeedoView(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 currentSpeedText,
                 arcRectangle.width() / 2 + arcRectangle.left - currentSpeedRectangle.width() / 2,
                 arcRectangle.height() / 2 + arcRectangle.top + currentSpeedRectangle.height() + ARROW_WIDTH / 2,
-                textPaint
+                currentSpeedTextPaint
             )
             drawText(
                 maxSpeedText,
                 paddingLeft.toFloat(),
                 arcRectangle.height() / 2 + arcRectangle.top,
-                textPaint
+                maxSpeedTextPaint
             )
         }
     }
@@ -191,8 +194,8 @@ class SpeedoView(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private fun calcBounds() {
         currentSpeedText = "$currentSpeed km/h"
         maxSpeedText = "$maxSpeed"
-        textPaint.getTextBounds(currentSpeedText, 0, currentSpeedText.length, currentSpeedRectangle)
-        textPaint.getTextBounds(maxSpeedText, 0, maxSpeedText.length, maxSpeedRectangle)
+        currentSpeedTextPaint.getTextBounds(currentSpeedText, 0, currentSpeedText.length, currentSpeedRectangle)
+        maxSpeedTextPaint.getTextBounds(maxSpeedText, 0, maxSpeedText.length, maxSpeedRectangle)
     }
 
     fun setLowSpeedColor(@ColorInt color: Int) {
@@ -253,6 +256,7 @@ class SpeedoView(context: Context, attrs: AttributeSet) : View(context, attrs) {
             Log.d(TAG, "setCurrentSpeed() called with: value = $value")
             throw SpeedoException("Current should be <= maxSpeed")
         }
+
         currentSpeed = value
         invalidate()
     }
@@ -265,4 +269,16 @@ class SpeedoView(context: Context, attrs: AttributeSet) : View(context, attrs) {
         maxSpeed = value
         invalidate()
     }
+
+    fun setCurrentSpeedTextColor(value: Int) {
+        currentSpeedTextPaint.color = value
+        invalidate()
+    }
+
+    fun setCurrentSpeedTextSize(value: Float) {
+        currentSpeedTextPaint.textSize = value
+        invalidate()
+    }
+
+    fun getMaxSpeed() = maxSpeed
 }

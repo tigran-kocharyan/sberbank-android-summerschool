@@ -5,12 +5,14 @@ import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.totowka.recyclerview.R
 import ru.totowka.recyclerview.adapter.StorageAdapter
+import ru.totowka.recyclerview.adapter.StorageItemTouchHelper
+import ru.totowka.recyclerview.adapter.StorageItemTouchHelperCallback
 import ru.totowka.recyclerview.controller.StorageRepository
-import ru.totowka.recyclerview.databinding.ActivityMainBinding
 import ru.totowka.recyclerview.model.type.Apple
 import ru.totowka.recyclerview.model.type.Basket
 import ru.totowka.recyclerview.model.type.StorageItem
@@ -18,7 +20,6 @@ import ru.totowka.recyclerview.model.util.GreedException
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
-    private lateinit var binding: ActivityMainBinding
     private lateinit var storageRepository: StorageRepository
     private lateinit var storageAdapter: StorageAdapter
     private lateinit var recyclerView: RecyclerView
@@ -33,10 +34,31 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     Toast.makeText(
                         view.context,
                         "No more than 3 apples in a basket!",
-                        Toast.LENGTH_LONG
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
             }
+        }
+    }
+    private var itemTouchHelper = object : StorageItemTouchHelper {
+        override fun onItemMove(fromPosition: Int, toPosition: Int) : Boolean {
+            return try {
+                storage = storageRepository.onMove(storage, fromPosition, toPosition)
+                storageAdapter.reload(storage)
+                true
+            } catch (exception: GreedException) {
+                Toast.makeText(
+                    applicationContext,
+                    "No more than 3 apples in a basket!",
+                    Toast.LENGTH_SHORT
+                ).show()
+                false
+            }
+        }
+
+        override fun onItemDismiss(position: Int) {
+            storage = storageRepository.onSwipe(storage, position)
+            storageAdapter.reload(storage)
         }
     }
 
@@ -54,9 +76,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val baskets = listOf(basket1, basket2, basket3)
         this.storage = storageRepository.store(baskets)
 
-        storageAdapter = StorageAdapter(storage, listener)
+        storageAdapter = StorageAdapter(storage, listener, itemTouchHelper)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = storageAdapter
+
+        val callback: ItemTouchHelper.Callback = StorageItemTouchHelperCallback(storageAdapter)
+        val touchHelper = ItemTouchHelper(callback)
+        touchHelper.attachToRecyclerView(recyclerView)
     }
 
     override fun onClick(v: View?) {

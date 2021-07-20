@@ -1,12 +1,12 @@
 package ru.totowka.recyclerview.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import ru.totowka.recyclerview.R
 import ru.totowka.recyclerview.controller.StorageDiffUtilCallback
@@ -18,8 +18,9 @@ import ru.totowka.recyclerview.model.util.StorageException
 import ru.totowka.recyclerview.view.StorageViewClickListener
 import java.lang.ref.WeakReference
 
-class StorageAdapter(private var items: List<StorageItem>, private val listener: StorageViewClickListener) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+class StorageAdapter(private var items: List<StorageItem>, private val listener: StorageViewClickListener, private val itemHelper: StorageItemTouchHelper) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>(), StorageItemTouchHelper {
 
     fun reload(newStorage: ArrayList<StorageItem>) {
         val diffResult = DiffUtil.calculateDiff(StorageDiffUtilCallback(this.items, newStorage))
@@ -115,5 +116,13 @@ class StorageAdapter(private var items: List<StorageItem>, private val listener:
 
     override fun getItemCount(): Int {
         return items.size
+    }
+
+    override fun onItemMove(fromPosition: Int, toPosition: Int) : Boolean {
+        return itemHelper.onItemMove(fromPosition, toPosition)
+    }
+
+    override fun onItemDismiss(position: Int) {
+        itemHelper.onItemDismiss(position)
     }
 }
