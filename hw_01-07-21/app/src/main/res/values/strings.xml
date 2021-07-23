@@ -1,5 +1,0 @@
-<resources>
-    <string name="app_name">RecyclerView</string>
-    <string name="delete_all">Удалить всё</string>
-    <string name="add_basket">Корзина</string>
-</resources>
