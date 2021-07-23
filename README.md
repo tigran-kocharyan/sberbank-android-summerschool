@@ -25,3 +25,13 @@
 - [10.07.2021 MultiTouch Drawer](hw_08-07-21)
 
 - [13.07.2021 Measure Responsive Speedy](hw_06-07-21)
+
+- 15.07.2021 Custom ViewGroup
+
+- [17.07.2021 Animations](https://github.com/tigran-kocharyan/sberbank-android-summerschool/tree/temporary-hw-repeat)
+
+- 20.07.2021 Kotlin
+
+- [22.07.2021 Fragment](hw_22-07-21)
+
+
