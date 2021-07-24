@@ -1,7 +1,0 @@
-<resources>
-    <string name="app_name">Transliterator</string>
-    <string name="en_ru"><![CDATA[En -> Ru]]></string>
-    <string name="ru_en"><![CDATA[Ru -> En]]></string>
-    <string name="english_to_russian">English</string>
-    <string name="russian_to_english">Russian</string>
-</resources>
