@@ -32,6 +32,6 @@
 
 - 20.07.2021 Kotlin
 
-- [22.07.2021 Fragment](hw_22-07-21)
+- [22.07.2021 Fragment UI](hw_22-07-21)
 
-
+- [24.07.2021 Fragment Transactions](hw_24-07-21)
