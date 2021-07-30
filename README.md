@@ -35,3 +35,7 @@
 - [22.07.2021 Fragment UI](hw_22-07-21)
 
 - [24.07.2021 Fragment Transactions](hw_24-07-21)
+
+- [27.07.2021 Handler](hw_27-07-21)
+
+- [29.07.2021 OkHttp](hw_29-07-21)
