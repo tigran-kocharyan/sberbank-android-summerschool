@@ -2,53 +2,102 @@ package ru.totowka.okhttp
 
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.widget.Button
+import android.widget.RadioButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import ru.totowka.okhttp.domain.OkHttpRepository
-import ru.totowka.okhttp.domain.OkHttpResponseCallback
+import io.reactivex.SingleObserver
+import io.reactivex.disposables.Disposable
 
 
-class MainActivity : AppCompatActivity(), OkHttpResponseCallback
-{
+class MainActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "Callback"
     }
 
-    private lateinit var getRequest : Button
-    private lateinit var postRequest : Button
-    private lateinit var textviewBody : TextView
-    private lateinit var client : OkHttpRepository
+    private lateinit var getRequest: Button
+    private lateinit var postRequest: Button
+    private lateinit var textviewBody: TextView
+    private lateinit var okhttp: RadioButton
+    private lateinit var httpurl: RadioButton
+
+    private lateinit var httpOkClient: HttpOkClient
+    private lateinit var httpUrlConnectionClient: HttpUrlConnectionClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initialize()
+        setListeners()
+        textviewBody.movementMethod = ScrollingMovementMethod()
+    }
+
+    private fun setListeners() {
         getRequest.setOnClickListener {
-             client.get("http://jsonplaceholder.typicode.com/posts?userId=1", this)
+            when(okhttp.isChecked) {
+                true -> {
+                    get(httpOkClient)
+                }
+                else -> {
+                    get(httpUrlConnectionClient)
+                }
+            }
+
         }
         postRequest.setOnClickListener {
-            client.post("http://jsonplaceholder.typicode.com/posts", this)
+            when(okhttp.isChecked) {
+                true -> {
+                    post(httpOkClient)
+                }
+                else -> {
+                    post(httpUrlConnectionClient)
+                }
+            }
+
         }
-        textviewBody.movementMethod = ScrollingMovementMethod()
+    }
+
+    private fun get(client: HttpClient) {
+        client.get("http://jsonplaceholder.typicode.com/posts?userId=1")
+            .subscribe(object : SingleObserver<String?> {
+                override fun onSuccess(value: String) {
+                    textviewBody.text = value
+                }
+
+                override fun onError(e: Throwable) {
+                    textviewBody.text = e.message
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    println("Single: onSubscribe as httpUrlConnectionRepository")
+                }
+            })
+    }
+
+    private fun post(client: HttpClient) {
+        client.post("http://jsonplaceholder.typicode.com/posts")
+            .subscribe(object : SingleObserver<String?> {
+                override fun onSuccess(value: String) {
+                    textviewBody.text = value
+                }
+
+                override fun onError(e: Throwable) {
+                    textviewBody.text = e.message
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    println("Single: onSubscribe")
+                }
+            })
     }
 
     private fun initialize() {
         getRequest = findViewById(R.id.get)
         postRequest = findViewById(R.id.post)
         textviewBody = findViewById(R.id.body)
-        client = OkHttpRepository()
-    }
-
-    override fun onFailure(response: String?, throwable: Throwable?) {
-        Log.d(TAG, "onFailure() called with: response = $response, throwable = $throwable")
-        Toast.makeText(this, "Fail to call API", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onSuccess(response: String?) {
-        Log.d(TAG, "onSuccess() called with: response = $response")
-        textviewBody.text = response
+        okhttp = findViewById(R.id.ok_http)
+        httpurl = findViewById(R.id.http_url_connection)
+        httpOkClient = HttpOkClient()
+        httpUrlConnectionClient = HttpUrlConnectionClient()
     }
 }
