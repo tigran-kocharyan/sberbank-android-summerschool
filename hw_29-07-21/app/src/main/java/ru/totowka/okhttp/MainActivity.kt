@@ -6,8 +6,7 @@ import android.widget.Button
 import android.widget.RadioButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import io.reactivex.SingleObserver
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var textviewBody: TextView
     private lateinit var okhttp: RadioButton
     private lateinit var httpurl: RadioButton
+    private var compositeDisposables = CompositeDisposable()
 
     private lateinit var httpOkClient: HttpOkClient
     private lateinit var httpUrlConnectionClient: HttpUrlConnectionClient
@@ -32,9 +32,32 @@ class MainActivity : AppCompatActivity() {
         textviewBody.movementMethod = ScrollingMovementMethod()
     }
 
+
+    private fun get(client: HttpClient) {
+        compositeDisposables.add(client.get("http://jsonplaceholder.typicode.com/posts?userId=1")
+            .subscribe({ value -> textviewBody.text = value }, { error -> textviewBody.text = error.message })
+        )
+    }
+
+    private fun post(client: HttpClient) {
+        compositeDisposables.add(client.post("http://jsonplaceholder.typicode.com/posts")
+            .subscribe({ value -> textviewBody.text = value }, { error -> textviewBody.text = error.message })
+        )
+    }
+
+    private fun initialize() {
+        getRequest = findViewById(R.id.get)
+        postRequest = findViewById(R.id.post)
+        textviewBody = findViewById(R.id.body)
+        okhttp = findViewById(R.id.ok_http)
+        httpurl = findViewById(R.id.http_url_connection)
+        httpOkClient = HttpOkClient()
+        httpUrlConnectionClient = HttpUrlConnectionClient()
+    }
+
     private fun setListeners() {
         getRequest.setOnClickListener {
-            when(okhttp.isChecked) {
+            when (okhttp.isChecked) {
                 true -> {
                     get(httpOkClient)
                 }
@@ -45,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
         }
         postRequest.setOnClickListener {
-            when(okhttp.isChecked) {
+            when (okhttp.isChecked) {
                 true -> {
                     post(httpOkClient)
                 }
@@ -57,47 +80,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun get(client: HttpClient) {
-        client.get("http://jsonplaceholder.typicode.com/posts?userId=1")
-            .subscribe(object : SingleObserver<String?> {
-                override fun onSuccess(value: String) {
-                    textviewBody.text = value
-                }
-
-                override fun onError(e: Throwable) {
-                    textviewBody.text = e.message
-                }
-
-                override fun onSubscribe(d: Disposable) {
-                    println("Single: onSubscribe as httpUrlConnectionRepository")
-                }
-            })
-    }
-
-    private fun post(client: HttpClient) {
-        client.post("http://jsonplaceholder.typicode.com/posts")
-            .subscribe(object : SingleObserver<String?> {
-                override fun onSuccess(value: String) {
-                    textviewBody.text = value
-                }
-
-                override fun onError(e: Throwable) {
-                    textviewBody.text = e.message
-                }
-
-                override fun onSubscribe(d: Disposable) {
-                    println("Single: onSubscribe")
-                }
-            })
-    }
-
-    private fun initialize() {
-        getRequest = findViewById(R.id.get)
-        postRequest = findViewById(R.id.post)
-        textviewBody = findViewById(R.id.body)
-        okhttp = findViewById(R.id.ok_http)
-        httpurl = findViewById(R.id.http_url_connection)
-        httpOkClient = HttpOkClient()
-        httpUrlConnectionClient = HttpUrlConnectionClient()
+    override fun onDestroy() {
+        compositeDisposables.clear()
+        super.onDestroy()
     }
 }
