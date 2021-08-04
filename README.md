@@ -39,3 +39,5 @@
 - [27.07.2021 Timer with Handler.postDelayed()](hw_27-07-21)
 
 - [29.07.2021 OkHttp](hw_29-07-21)
+
+- [03.08.2021 MVVM](hw_03-08-21)
