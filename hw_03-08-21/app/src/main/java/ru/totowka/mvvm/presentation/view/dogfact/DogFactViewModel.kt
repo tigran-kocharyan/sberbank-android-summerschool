@@ -1,22 +1,21 @@
-package ru.totowka.mvvm.presentation.viewmodel
+package ru.totowka.mvvm.presentation.view.dogfact
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import ru.totowka.mvvm.data.repository.DogInfoRepository
+import ru.totowka.mvvm.presentation.utils.scheduler.SchedulersProvider
 
 /**
  * ViewModel для работы с экраном DogFactActivity
  *
  * @param dogInfoRepository репозиторий для работы с методами обращения к сети
  */
-class DogFactViewModel(private val dogInfoRepository: DogInfoRepository) : ViewModel() {
+class DogFactViewModel(private val dogInfoRepository: DogInfoRepository, private val schedulers: SchedulersProvider) : ViewModel() {
     private val progressLiveData = MutableLiveData<Boolean>()
     private val errorLiveData = MutableLiveData<Throwable>()
-    private val dogFactLiveData: MutableLiveData<String> = MutableLiveData<String>()
+    private val dogFactLiveData = MutableLiveData<String>()
     private var disposable: Disposable? = null
 
     /**
@@ -26,8 +25,8 @@ class DogFactViewModel(private val dogInfoRepository: DogInfoRepository) : ViewM
         disposable = dogInfoRepository.loadDogFactAsyncRx()
             .doOnSubscribe { progressLiveData.postValue(true) }
             .doAfterTerminate { progressLiveData.postValue(false) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(schedulers.io())
+            .observeOn(schedulers.ui())
             .subscribe(dogFactLiveData::setValue, errorLiveData::setValue)
     }
 

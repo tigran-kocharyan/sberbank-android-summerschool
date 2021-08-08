@@ -9,8 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MVVM">
-        <activity android:name=".presentation.view.DogFactActivity"/>
-        <activity android:name=".presentation.view.MainActivity">
+        <activity android:name=".presentation.view.dogfact.DogFactActivity"/>
+        <activity android:name=".presentation.view.dogs.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,5 +18,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

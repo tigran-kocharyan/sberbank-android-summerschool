@@ -1,4 +1,4 @@
-package ru.totowka.mvvm.presentation.view
+package ru.totowka.mvvm.presentation.view.dogs
 
 import android.os.Bundle
 import android.util.Log
@@ -8,23 +8,26 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.serialization.json.Json
 import ru.totowka.mvvm.data.model.DogImageModel
-import ru.totowka.mvvm.data.provider.DogInfoProvider
+import ru.totowka.mvvm.data.provider.DogInfoProviderImpl
 import ru.totowka.mvvm.data.repository.DogInfoRepository
 import ru.totowka.mvvm.data.repository.DogInfoRepositoryImpl
+import ru.totowka.mvvm.data.store.DogStoreImpl
 import ru.totowka.mvvm.databinding.ActivityMainBinding
-import ru.totowka.mvvm.presentation.view.adapter.PreviewRecyclerAdapter
-import ru.totowka.mvvm.presentation.viewmodel.DogInfoViewModel
+import ru.totowka.mvvm.presentation.view.dogs.adapter.PreviewRecyclerAdapter
+import ru.totowka.mvvm.presentation.utils.scheduler.SchedulersProviderImpl
 
 /**
  * Основное окно приложения со списком, который хранит в себе изображение и номер факта.
  */
 class MainActivity : AppCompatActivity() {
-    
+
     companion object {
+        private const val PREFS_NAME = "PREFS"
         private const val TAG = "LiveData"
     }
-    
+
     private lateinit var activityMainBinding: ActivityMainBinding
     private lateinit var viewModel: DogInfoViewModel
 
@@ -37,18 +40,25 @@ class MainActivity : AppCompatActivity() {
         createViewModel()
         observeLiveData()
 
+        activityMainBinding.swiperefresh.setOnRefreshListener {
+            viewModel.loadDataAsyncRx(isSwiped = true)
+            activityMainBinding.swiperefresh.isRefreshing = false
+         }
         if (savedInstanceState == null) {
-            viewModel.loadDataAsyncRx();
+            viewModel.loadDataAsyncRx()
         }
     }
 
     private fun createViewModel() {
-        val provider = DogInfoProvider()
-        val repository : DogInfoRepository = DogInfoRepositoryImpl(provider)
+        val provider = DogInfoProviderImpl()
+        val json = Json { ignoreUnknownKeys = true }
+        val schedulerProvider = SchedulersProviderImpl()
+        val storage = DogStoreImpl(this.getSharedPreferences(PREFS_NAME, MODE_PRIVATE), json)
+        val repository: DogInfoRepository = DogInfoRepositoryImpl(provider, storage)
 
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return DogInfoViewModel(repository) as T
+                return DogInfoViewModel(repository, schedulerProvider) as T
             }
         }).get(DogInfoViewModel::class.java)
     }
@@ -60,7 +70,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showProgress(isVisible: Boolean) {
-        Log.i(TAG, "showProgress called with param = " + isVisible);
+        Log.i(TAG, "showProgress called with param = $isVisible");
         activityMainBinding.progressbar.visibility = if (isVisible) View.VISIBLE else View.GONE
     }
 

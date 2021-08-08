@@ -1,5 +1,6 @@
-package ru.totowka.mvvm.presentation.view
+package ru.totowka.mvvm.presentation.view.dogfact
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -9,18 +10,24 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.serialization.json.Json
 import ru.totowka.mvvm.R
-import ru.totowka.mvvm.data.provider.DogInfoProvider
+import ru.totowka.mvvm.data.provider.DogInfoProviderImpl
 import ru.totowka.mvvm.data.repository.DogInfoRepository
 import ru.totowka.mvvm.data.repository.DogInfoRepositoryImpl
+import ru.totowka.mvvm.data.store.DogStoreImpl
 import ru.totowka.mvvm.databinding.ActivityDogInfoBinding
-import ru.totowka.mvvm.presentation.viewmodel.DogFactViewModel
-import ru.totowka.mvvm.presentation.viewmodel.DogInfoViewModel
+import ru.totowka.mvvm.presentation.utils.scheduler.SchedulersProviderImpl
 
 /**
  * Окно с отображением изображения собаки и рандомного факта о собаках
  */
 class DogFactActivity : AppCompatActivity() {
+    companion object {
+        private const val DOG_IMG_URL = "dog_info_url"
+        private const val PREFS_NAME = "PREFS"
+    }
+
     private lateinit var dogInfoActivityBinding: ActivityDogInfoBinding
     private lateinit var viewModel: DogFactViewModel
 
@@ -48,12 +55,15 @@ class DogFactActivity : AppCompatActivity() {
     }
 
     private fun createViewModel() {
-        val provider = DogInfoProvider()
-        val repository: DogInfoRepository = DogInfoRepositoryImpl(provider)
+        val provider = DogInfoProviderImpl()
+        val schedulerProvider = SchedulersProviderImpl()
+        val json = Json { ignoreUnknownKeys = true }
+        val storage = DogStoreImpl(this.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE), json)
+        val repository: DogInfoRepository = DogInfoRepositoryImpl(provider, storage)
 
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return DogFactViewModel(repository) as T
+                return DogFactViewModel(repository, schedulerProvider) as T
             }
         }).get(DogFactViewModel::class.java)
     }
@@ -75,9 +85,5 @@ class DogFactActivity : AppCompatActivity() {
     private fun showError(throwable: Throwable) {
         Log.d("error", "showError() called with: throwable = $throwable")
         Snackbar.make(dogInfoActivityBinding.root, throwable.toString(), BaseTransientBottomBar.LENGTH_SHORT).show();
-    }
-
-    companion object {
-        private const val DOG_IMG_URL = "doginfourl"
     }
 }

@@ -1,4 +1,4 @@
-package ru.totowka.mvvm.presentation.view.adapter
+package ru.totowka.mvvm.presentation.view.dogs.adapter
 
 import android.content.Intent
 import android.view.LayoutInflater
@@ -11,7 +11,7 @@ import com.google.android.material.snackbar.Snackbar
 import ru.totowka.mvvm.R
 import ru.totowka.mvvm.data.model.DogImageModel
 import ru.totowka.mvvm.databinding.ViewRecyclerItemBinding
-import ru.totowka.mvvm.presentation.view.DogFactActivity
+import ru.totowka.mvvm.presentation.view.dogfact.DogFactActivity
 
 /**
  * Адаптер для отображения списка DogImageModel
@@ -22,7 +22,7 @@ class PreviewRecyclerAdapter(private val list: List<DogImageModel>) :
     RecyclerView.Adapter<PreviewRecyclerAdapter.PreviewViewHolder>() {
 
     companion object {
-        private const val DOG_INFO_URL = "doginfourl"
+        private const val DOG_IMG_URL = "dog_info_url"
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PreviewViewHolder {
@@ -54,9 +54,8 @@ class PreviewRecyclerAdapter(private val list: List<DogImageModel>) :
             itemView.setOnClickListener {
                 val context = itemView.context
                 val showPhotoIntent = Intent(context, DogFactActivity::class.java)
-                showPhotoIntent.putExtra(DOG_INFO_URL, dogImageModel.imgUrl)
+                showPhotoIntent.putExtra(DOG_IMG_URL, dogImageModel.imgUrl)
                 context.startActivity(showPhotoIntent)
-                Snackbar.make(it, "Clicked!", Snackbar.LENGTH_SHORT).show()
             }
         }
     }

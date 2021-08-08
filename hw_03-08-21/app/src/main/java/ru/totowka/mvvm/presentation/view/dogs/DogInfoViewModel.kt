@@ -1,20 +1,28 @@
-package ru.totowka.mvvm.presentation.viewmodel
+package ru.totowka.mvvm.presentation.view.dogs
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import ru.totowka.mvvm.data.model.DogImageModel
 import ru.totowka.mvvm.data.repository.DogInfoRepository
+import ru.totowka.mvvm.presentation.utils.scheduler.SchedulersProvider
+import kotlin.random.Random
 
 /**
  * ViewModel для работы с экраном MainActivity
  *
  * @param dogInfoRepository репозиторий для работы с методами обращения к сети
  */
-class DogInfoViewModel(private val dogInfoRepository: DogInfoRepository) : ViewModel() {
+class DogInfoViewModel(private val dogInfoRepository: DogInfoRepository, private val schedulers: SchedulersProvider) :
+    ViewModel() {
+
+    companion object {
+        private const val FACT_URL = "https://dog-facts-api.herokuapp.com/api/v1/resources/dogs"
+        private const val IMAGE_URL = "https://dog.ceo/api/breeds/image/random"
+        private const val MINIMUM_IMAGES = 10
+        private const val MAXIMUM_IMAGES = 20
+    }
 
     private val progressLiveData = MutableLiveData<Boolean>()
     private val errorLiveData = MutableLiveData<Throwable>()
@@ -24,20 +32,25 @@ class DogInfoViewModel(private val dogInfoRepository: DogInfoRepository) : ViewM
     /**
      * Загрузка списка изображений в IO-потоке и оповещение View об изменениях
      */
-    fun loadDataAsyncRx() {
-        disposable = dogInfoRepository.loadDataAsyncRx()
-            .doOnSubscribe { progressLiveData.postValue(true) }
-            .doAfterTerminate { progressLiveData.postValue(false) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(dogImageLiveData::setValue, errorLiveData::setValue)
+    fun loadDataAsyncRx(
+        isSwiped: Boolean = false,
+        amount: Int = Random.nextInt(MINIMUM_IMAGES, MAXIMUM_IMAGES),
+        url: String = IMAGE_URL
+    ) {
+        disposable =
+            dogInfoRepository.loadDataAsyncRx(amount = amount, url = url, isSwiped = isSwiped)
+                .doOnSubscribe { progressLiveData.postValue(true) }
+                .doAfterTerminate { progressLiveData.postValue(false) }
+                .subscribeOn(schedulers.io())
+                .observeOn(schedulers.ui())
+                .subscribe(dogImageLiveData::setValue, errorLiveData::setValue)
     }
 
     override fun onCleared() {
         super.onCleared()
 
         disposable?.let {
-            if(!it.isDisposed) {
+            if (!it.isDisposed) {
                 it.dispose()
             }
             disposable = null
