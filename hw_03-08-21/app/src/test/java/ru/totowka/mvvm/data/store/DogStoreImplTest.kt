@@ -34,7 +34,7 @@ class DogStoreImplTest {
     @Test
     fun `getDogPictures returns correct list`() {
         every { preferences.getString(DOGS_KEY, null) } returns ""
-        every { json.decodeFromString<List<DogImageModel>>("") } returns emptyList()
+        every { json.decodeFromString<List<Any>>(any()) } returns emptyList()
 
         dogStore.getDogPictures()
 
