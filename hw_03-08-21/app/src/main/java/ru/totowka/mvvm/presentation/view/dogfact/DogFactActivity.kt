@@ -17,7 +17,12 @@ import ru.totowka.mvvm.data.repository.DogInfoRepository
 import ru.totowka.mvvm.data.repository.DogInfoRepositoryImpl
 import ru.totowka.mvvm.data.store.DogStoreImpl
 import ru.totowka.mvvm.databinding.ActivityDogInfoBinding
+import ru.totowka.mvvm.databinding.ActivityMainBinding
+import ru.totowka.mvvm.di.DaggerDogComponent
+import ru.totowka.mvvm.di.DogComponent
 import ru.totowka.mvvm.presentation.utils.scheduler.SchedulersProviderImpl
+import ru.totowka.mvvm.presentation.view.dogs.DogInfoViewModel
+import javax.inject.Inject
 
 /**
  * Окно с отображением изображения собаки и рандомного факта о собаках
@@ -25,8 +30,14 @@ import ru.totowka.mvvm.presentation.utils.scheduler.SchedulersProviderImpl
 class DogFactActivity : AppCompatActivity() {
     companion object {
         private const val DOG_IMG_URL = "dog_info_url"
-        private const val PREFS_NAME = "PREFS"
     }
+
+    private lateinit var dogComponent: DogComponent
+    @Inject
+    lateinit var schedulerProvider: SchedulersProviderImpl
+    @Inject
+    lateinit var repository: DogInfoRepositoryImpl
+
 
     private lateinit var dogInfoActivityBinding: ActivityDogInfoBinding
     private lateinit var viewModel: DogFactViewModel
@@ -35,9 +46,10 @@ class DogFactActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         dogInfoActivityBinding = ActivityDogInfoBinding.inflate(layoutInflater)
         val view = dogInfoActivityBinding.root
+        dogComponent = initDagger()
+        dogComponent.inject(this)
         setContentView(view)
         intent.getStringExtra(DOG_IMG_URL)?.let { updateImg(it) }
-
         createViewModel()
         observeLiveData()
 
@@ -54,13 +66,12 @@ class DogFactActivity : AppCompatActivity() {
             .into(dogInfoActivityBinding.image)
     }
 
-    private fun createViewModel() {
-        val provider = DogInfoProviderImpl()
-        val schedulerProvider = SchedulersProviderImpl()
-        val json = Json { ignoreUnknownKeys = true }
-        val storage = DogStoreImpl(this.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE), json)
-        val repository: DogInfoRepository = DogInfoRepositoryImpl(provider, storage)
+    private fun initDagger(): DogComponent =
+        DaggerDogComponent.builder()
+            .activity(this)
+            .build()
 
+    private fun createViewModel() {
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return DogFactViewModel(repository, schedulerProvider) as T
@@ -84,6 +95,6 @@ class DogFactActivity : AppCompatActivity() {
 
     private fun showError(throwable: Throwable) {
         Log.d("error", "showError() called with: throwable = $throwable")
-        Snackbar.make(dogInfoActivityBinding.root, throwable.toString(), BaseTransientBottomBar.LENGTH_SHORT).show();
+        Snackbar.make(dogInfoActivityBinding.root, throwable.toString(), BaseTransientBottomBar.LENGTH_SHORT).show()
     }
 }

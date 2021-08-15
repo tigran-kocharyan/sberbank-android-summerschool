@@ -29,7 +29,7 @@ class DogStoreImpl(
     override fun getDogPictures(): List<DogImageModel>? {
         val dogs = preferences.getString(DOGS_KEY, null)
         var result = emptyList<DogImageModel>()
-        if(dogs != null) {
+        if (dogs != null) {
             result = json.decodeFromString<List<DogImageModel>>(dogs)
         } else {
             return null

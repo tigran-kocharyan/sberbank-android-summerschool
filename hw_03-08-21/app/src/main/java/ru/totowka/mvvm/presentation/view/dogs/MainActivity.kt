@@ -8,15 +8,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.serialization.json.Json
 import ru.totowka.mvvm.data.model.DogImageModel
-import ru.totowka.mvvm.data.provider.DogInfoProviderImpl
 import ru.totowka.mvvm.data.repository.DogInfoRepository
 import ru.totowka.mvvm.data.repository.DogInfoRepositoryImpl
-import ru.totowka.mvvm.data.store.DogStoreImpl
 import ru.totowka.mvvm.databinding.ActivityMainBinding
-import ru.totowka.mvvm.presentation.view.dogs.adapter.PreviewRecyclerAdapter
+import ru.totowka.mvvm.di.DaggerDogComponent
+import ru.totowka.mvvm.di.DogComponent
+import ru.totowka.mvvm.presentation.utils.scheduler.SchedulersProvider
 import ru.totowka.mvvm.presentation.utils.scheduler.SchedulersProviderImpl
+import ru.totowka.mvvm.presentation.view.dogs.adapter.PreviewRecyclerAdapter
+import javax.inject.Inject
 
 /**
  * Основное окно приложения со списком, который хранит в себе изображение и номер факта.
@@ -28,14 +29,20 @@ class MainActivity : AppCompatActivity() {
         private const val TAG = "LiveData"
     }
 
+    private lateinit var dogComponent: DogComponent
     private lateinit var activityMainBinding: ActivityMainBinding
     private lateinit var viewModel: DogInfoViewModel
+
+    @Inject lateinit var schedulerProvider: SchedulersProviderImpl
+    @Inject lateinit var repository: DogInfoRepositoryImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         val view = activityMainBinding.root
         setContentView(view)
+        dogComponent = initDagger()
+        dogComponent.inject(this)
 
         createViewModel()
         observeLiveData()
@@ -43,19 +50,18 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.swiperefresh.setOnRefreshListener {
             viewModel.loadDataAsyncRx(isSwiped = true)
             activityMainBinding.swiperefresh.isRefreshing = false
-         }
+        }
         if (savedInstanceState == null) {
             viewModel.loadDataAsyncRx()
         }
     }
 
-    private fun createViewModel() {
-        val provider = DogInfoProviderImpl()
-        val json = Json { ignoreUnknownKeys = true }
-        val schedulerProvider = SchedulersProviderImpl()
-        val storage = DogStoreImpl(this.getSharedPreferences(PREFS_NAME, MODE_PRIVATE), json)
-        val repository: DogInfoRepository = DogInfoRepositoryImpl(provider, storage)
+    private fun initDagger(): DogComponent =
+        DaggerDogComponent.builder()
+            .activity(this)
+            .build()
 
+    private fun createViewModel() {
         viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return DogInfoViewModel(repository, schedulerProvider) as T
@@ -70,7 +76,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showProgress(isVisible: Boolean) {
-        Log.i(TAG, "showProgress called with param = $isVisible");
+        Log.i(TAG, "showProgress called with param = $isVisible")
         activityMainBinding.progressbar.visibility = if (isVisible) View.VISIBLE else View.GONE
     }
 
@@ -81,6 +87,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun showError(throwable: Throwable) {
         Log.d(TAG, "showError() called with: throwable = $throwable")
-        Snackbar.make(activityMainBinding.root, throwable.toString(), BaseTransientBottomBar.LENGTH_SHORT).show();
+        Snackbar.make(activityMainBinding.root, throwable.toString(), BaseTransientBottomBar.LENGTH_SHORT).show()
     }
 }

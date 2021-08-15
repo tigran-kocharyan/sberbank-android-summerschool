@@ -10,7 +10,6 @@ import ru.totowka.mvvm.data.model.DogImageModel
 import ru.totowka.mvvm.data.model.DogImageResponseModel
 import java.io.IOException
 import java.lang.reflect.Type
-import kotlin.jvm.Throws
 import kotlin.random.Random
 
 /**

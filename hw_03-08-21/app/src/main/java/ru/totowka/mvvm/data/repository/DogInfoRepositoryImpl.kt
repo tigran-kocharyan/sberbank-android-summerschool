@@ -5,7 +5,6 @@ import ru.totowka.mvvm.data.model.DogImageModel
 import ru.totowka.mvvm.data.provider.DogInfoProvider
 import ru.totowka.mvvm.data.store.DogStore
 import java.io.IOException
-import kotlin.jvm.Throws
 
 /**
  * Релазизация [DogInfoRepository]
