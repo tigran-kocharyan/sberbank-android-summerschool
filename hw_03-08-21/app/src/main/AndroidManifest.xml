@@ -10,6 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MVVM">
         <activity android:name=".presentation.view.dogfact.DogFactActivity"/>
+        <activity android:name=".presentation.view.settings.SettingsActivity"/>
         <activity android:name=".presentation.view.dogs.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

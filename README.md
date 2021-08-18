@@ -40,7 +40,7 @@
 
 - [29.07.2021 OkHttp](hw_29-07-21)
 
-- [03.08.2021 MVVM, JUnit, Dagger 2](hw_03-08-21)
+- [03.08.2021 MVVM, JUnit, Dagger 2, PreferenceFragment](hw_03-08-21)
 
 - [10.08.2021 Broadcast Receiver](hw_10-08-21)
 

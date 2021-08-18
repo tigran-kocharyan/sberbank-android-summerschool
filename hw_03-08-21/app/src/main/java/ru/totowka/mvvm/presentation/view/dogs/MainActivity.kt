@@ -1,22 +1,25 @@
 package ru.totowka.mvvm.presentation.view.dogs
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import ru.totowka.mvvm.R
 import ru.totowka.mvvm.data.model.DogImageModel
-import ru.totowka.mvvm.data.repository.DogInfoRepository
 import ru.totowka.mvvm.data.repository.DogInfoRepositoryImpl
 import ru.totowka.mvvm.databinding.ActivityMainBinding
 import ru.totowka.mvvm.di.DaggerDogComponent
 import ru.totowka.mvvm.di.DogComponent
-import ru.totowka.mvvm.presentation.utils.scheduler.SchedulersProvider
 import ru.totowka.mvvm.presentation.utils.scheduler.SchedulersProviderImpl
 import ru.totowka.mvvm.presentation.view.dogs.adapter.PreviewRecyclerAdapter
+import ru.totowka.mvvm.presentation.view.settings.SettingsActivity
 import javax.inject.Inject
 
 /**
@@ -33,8 +36,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding
     private lateinit var viewModel: DogInfoViewModel
 
-    @Inject lateinit var schedulerProvider: SchedulersProviderImpl
-    @Inject lateinit var repository: DogInfoRepositoryImpl
+    @Inject
+    lateinit var schedulerProvider: SchedulersProviderImpl
+    @Inject
+    lateinit var repository: DogInfoRepositoryImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +72,18 @@ class MainActivity : AppCompatActivity() {
                 return DogInfoViewModel(repository, schedulerProvider) as T
             }
         }).get(DogInfoViewModel::class.java)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.settings_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.settings) {
+            this.startActivity(Intent(this, SettingsActivity::class.java))
+        }
+        return true
     }
 
     private fun observeLiveData() {

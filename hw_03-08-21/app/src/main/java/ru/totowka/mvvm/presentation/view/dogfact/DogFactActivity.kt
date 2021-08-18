@@ -7,6 +7,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -49,7 +50,12 @@ class DogFactActivity : AppCompatActivity() {
         dogComponent = initDagger()
         dogComponent.inject(this)
         setContentView(view)
-        intent.getStringExtra(DOG_IMG_URL)?.let { updateImg(it) }
+        if(getFragmentPreferencesOption()) {
+            dogInfoActivityBinding.image.visibility = View.VISIBLE
+            intent.getStringExtra(DOG_IMG_URL)?.let { updateImg(it) }
+        } else {
+            dogInfoActivityBinding.image.visibility = View.GONE
+        }
         createViewModel()
         observeLiveData()
 
@@ -77,6 +83,10 @@ class DogFactActivity : AppCompatActivity() {
                 return DogFactViewModel(repository, schedulerProvider) as T
             }
         }).get(DogFactViewModel::class.java)
+    }
+
+    private fun getFragmentPreferencesOption() : Boolean {
+        return PreferenceManager.getDefaultSharedPreferences(this).getBoolean("show_pics", true)
     }
 
     private fun observeLiveData() {
