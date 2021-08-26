@@ -45,3 +45,8 @@
 - [10.08.2021 Broadcast Receiver](hw_10-08-21)
 
 - [10.08.2021 Runtime Permissions](hw_12-08-21)
+
+- [21.08.2021 Services + Notifications](hw_21-08-21)
+
+- [24.08.2021 SQLite](hw_24-08-21)
+
