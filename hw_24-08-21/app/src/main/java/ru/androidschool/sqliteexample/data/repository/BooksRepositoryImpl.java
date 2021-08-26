@@ -9,8 +9,8 @@ import android.provider.BaseColumns;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.androidschool.sqliteexample.db.BooksDbHelper;
-import ru.androidschool.sqliteexample.db.BooksDbSchema;
+import ru.androidschool.sqliteexample.data.db.BooksDbHelper;
+import ru.androidschool.sqliteexample.data.db.BooksDbSchema;
 import ru.androidschool.sqliteexample.domain.BooksRepository;
 import ru.androidschool.sqliteexample.domain.model.Book;
 

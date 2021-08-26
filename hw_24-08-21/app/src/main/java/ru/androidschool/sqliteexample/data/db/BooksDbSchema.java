@@ -1,4 +1,4 @@
-package ru.androidschool.sqliteexample.db;
+package ru.androidschool.sqliteexample.data.db;
 
 public class BooksDbSchema {
     public static final class BooksTable {
@@ -8,6 +8,7 @@ public class BooksDbSchema {
             public static final String TITLE = "title";
             public static final String AUTHOR = "author";
             public static final String SHELF_NUMBER = "shelf_number";
+            public static final String COUNT = "count";
         }
     }
 }

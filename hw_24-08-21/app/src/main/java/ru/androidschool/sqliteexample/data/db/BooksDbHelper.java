@@ -1,5 +1,6 @@
-package ru.androidschool.sqliteexample.db;
+package ru.androidschool.sqliteexample.data.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -26,5 +27,11 @@ public class BooksDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        if (oldVersion < 2) {
+            sqLiteDatabase.execSQL("alter table " + BooksDbSchema.BooksTable.NAME + " ADD " + BooksDbSchema.BooksTable.Cols.COUNT + " integer");
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(BooksDbSchema.BooksTable.Cols.COUNT, 1);
+            sqLiteDatabase.update(BooksDbSchema.BooksTable.NAME, contentValues, null, null);
+        }
     }
 }
